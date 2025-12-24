@@ -3,4 +3,6 @@ project(FAnCOurier)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(FAnCOurier main.cpp)
+add_executable(FAnCOurier main.cpp
+        SimManager.cpp
+        Headers/SimManager.h)

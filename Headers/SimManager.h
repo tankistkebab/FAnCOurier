@@ -1,0 +1,11 @@
+
+#ifndef FANCOURIER_SIMMANAGER_H
+#define FANCOURIER_SIMMANAGER_H
+
+
+class SimManager
+{
+};
+
+
+#endif //FANCOURIER_SIMMANAGER_H
