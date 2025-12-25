@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(FAnCOurier main.cpp
         SimManager.cpp
-        Headers/SimManager.h)
+        Headers/SimManager.h
+        Utils.cpp
+        Headers/Utils.h)
