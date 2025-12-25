@@ -7,4 +7,8 @@ add_executable(FAnCOurier main.cpp
         SimManager.cpp
         Headers/SimManager.h
         Utils.cpp
-        Headers/Utils.h)
+        Headers/Utils.h
+        "Logic/Map Building/IMapGenerator.cpp"
+        "Headers/Map Building/IMapGenerator.h"
+        "Logic/Map Building/Map.cpp"
+        "Headers/Map Building/Map.h")
