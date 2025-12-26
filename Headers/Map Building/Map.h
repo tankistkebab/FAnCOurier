@@ -16,8 +16,10 @@ private:
     //Harta (matrice) cu vector in loc de matrice clasica pentru felxibilitate si memory safety
     vector<vector<CELLTYPE>> grid;
 
-    //Cache pentru statii si clienti (puncte de interes)
-    vector<>
+    //Cache pentru statii, clienti si Baza (puncte de interes)
+    vector<POINT> chargingStationsLocations;
+    vector<POINT> clientsLocatioons;
+    POINT baza;
 
 public:
 

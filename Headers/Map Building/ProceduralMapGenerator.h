@@ -3,9 +3,10 @@
 #include "IMapGenerator.h"
 
 
-class ProceduralMapGenerator
+class ProceduralMapGenerator : public IMapGenerator
 {
-
+public:
+    void generateMap(Map &map) override;
 };
 
 
