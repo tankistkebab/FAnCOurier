@@ -1,16 +1,15 @@
 #ifndef FANCOURIER_FILEMAPLOADER_H
 #define FANCOURIER_FILEMAPLOADER_H
 #include "IMapGenerator.h"
-#include <fstream>
 
 class FileMapLoader : public IMapGenerator
 {
 private:
-    ifstream file = nullptr;
+    string config_file_adress;
+    ifstream config_file;
 public:
-
-    void setFileAdress(string adresa);
-
+    //TODO
+    void setConfigFile(string adress) override;
     void generateMap(Map &map) override;
 };
 

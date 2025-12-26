@@ -5,8 +5,11 @@
 
 class ProceduralMapGenerator : public IMapGenerator
 {
+private:
+    string config_file_adress;
 public:
     void generateMap(Map &map) override;
+    void setConfigFile(string adress) override;
 };
 
 
