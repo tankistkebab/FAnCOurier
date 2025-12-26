@@ -11,4 +11,8 @@ add_executable(FAnCOurier main.cpp
         "Logic/Map Building/IMapGenerator.cpp"
         "Headers/Map Building/IMapGenerator.h"
         "Logic/Map Building/Map.cpp"
-        "Headers/Map Building/Map.h")
+        "Headers/Map Building/Map.h"
+        "Logic/Map Building/FileMapLoader.cpp"
+        "Headers/Map Building/FileMapLoader.h"
+        "Logic/Map Building/ProceduralMapGenerator.cpp"
+        "Headers/Map Building/ProceduralMapGenerator.h")

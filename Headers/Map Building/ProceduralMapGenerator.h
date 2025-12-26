@@ -1,0 +1,12 @@
+#ifndef FANCOURIER_PROCEDURALMAPGENERATOR_H
+#define FANCOURIER_PROCEDURALMAPGENERATOR_H
+#include "IMapGenerator.h"
+
+
+class ProceduralMapGenerator
+{
+
+};
+
+
+#endif //FANCOURIER_PROCEDURALMAPGENERATOR_H
