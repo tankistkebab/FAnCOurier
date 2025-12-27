@@ -4,15 +4,15 @@ project(FAnCOurier)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(FAnCOurier main.cpp
-        SimManager.cpp
+        Logic/SimManager.cpp
         Headers/SimManager.h
-        Utils.cpp
+        Logic/Utils.cpp
         Headers/Utils.h
-        "Logic/Map Building/IMapGenerator.cpp"
-        "Headers/Map Building/IMapGenerator.h"
-        "Logic/Map Building/Map.cpp"
-        "Headers/Map Building/Map.h"
-        "Logic/Map Building/FileMapLoader.cpp"
-        "Headers/Map Building/FileMapLoader.h"
-        "Logic/Map Building/ProceduralMapGenerator.cpp"
-        "Headers/Map Building/ProceduralMapGenerator.h")
+        Logic/Map_Building/IMapGenerator.cpp
+        "Headers/Map_Building/IMapGenerator.h"
+        "Logic/Map_Building/Map.cpp"
+        "Headers/Map_Building/Map.h"
+        "Logic/Map_Building/FileMapLoader.cpp"
+        "Headers/Map_Building/FileMapLoader.h"
+        "Logic/Map_Building/ProceduralMapGenerator.cpp"
+        "Headers/Map_Building/ProceduralMapGenerator.h")

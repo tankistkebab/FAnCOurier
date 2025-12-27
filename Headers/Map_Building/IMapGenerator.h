@@ -1,15 +1,14 @@
 #ifndef FANCOURIER_IMAPGENERATOR_H
 #define FANCOURIER_IMAPGENERATOR_H
-#include <iostream>
 #include <fstream>
+#include <sstream>
+#include "Map.h"
 #pragma once
 
 using namespace std;
 
-class Map;
-
 // paradigma strategy
-class IMapGenerator
+class IMapGenerator : public Map
 {
 public:
     virtual void generateMap(Map& map) = 0;

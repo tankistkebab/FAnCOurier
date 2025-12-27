@@ -1,6 +1,7 @@
 #ifndef FANCOURIER_FILEMAPLOADER_H
 #define FANCOURIER_FILEMAPLOADER_H
 #include "IMapGenerator.h"
+#include <algorithm>
 
 class FileMapLoader : public IMapGenerator
 {

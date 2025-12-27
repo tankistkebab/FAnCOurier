@@ -5,6 +5,8 @@
 #include <vector>
 #include "../Utils.h"
 
+class IMapGenerator;
+
 using namespace std;
 
 class Map
@@ -23,6 +25,8 @@ private:
 
 public:
 
+    friend class FileMapLoader;
+    friend class ProceduralMapGenerator;
 };
 
 

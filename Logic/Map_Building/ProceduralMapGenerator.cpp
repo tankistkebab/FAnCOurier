@@ -1,4 +1,4 @@
-#include "../../Headers/Map Building/ProceduralMapGenerator.h"
+#include "../../Headers/Map_Building/ProceduralMapGenerator.h"
 
 void ProceduralMapGenerator::setConfigFile(string adress)
 {
@@ -8,7 +8,6 @@ void ProceduralMapGenerator::setConfigFile(string adress)
 
 void ProceduralMapGenerator::generateMap(Map &map)
 {
-    ifstream configFile;
 
 }
 

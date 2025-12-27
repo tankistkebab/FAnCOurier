@@ -1,9 +1,12 @@
 #ifndef FANCOURIER_UTILS_H
 #define FANCOURIER_UTILS_H
 
-enum class AGENTSTATUS
+enum class AGENT_STATUS
 {
-    //TODO
+    IDLE,
+    MOVING,
+    CHARGING,
+    DEAD
 };
 
 enum class CELLTYPE
@@ -16,7 +19,7 @@ enum class CELLTYPE
     EMPTY_SPACE // X
 };
 
-typedef struct POINT
+struct POINT
 {
     int x, y;
     bool operator==(const POINT& pct) const // copiem doar adresa POINT pt eficienta
