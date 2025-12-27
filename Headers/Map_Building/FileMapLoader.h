@@ -6,12 +6,12 @@
 class FileMapLoader : public IMapGenerator
 {
 private:
-    string config_file_adress;
-    ifstream config_file;
+    string map_adress;
+
 public:
     //TODO
-    void setConfigFile(string adress) override;
     void generateMap(Map &map) override;
+    void setMapAdress(string adress);
 };
 
 

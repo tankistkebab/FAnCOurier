@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <iostream>
 
 #include "Headers/SimManager.h"
@@ -6,6 +7,13 @@ using namespace std;
 
 int main()
 {
+    int selector, status;
+
+    string config_file_adress = "..//Database//simulation_setup.txt";
+
+    selector = 0;
+    status = 1;
+
     //Instantiem singletoanele (managerele)
     SimManager* sim_manager = SimManager::getInstance();
 
@@ -13,12 +21,26 @@ int main()
     cout << "Incepe initializarea aplicatiei." << endl;
 
     //Incarcam parametrii de configurare + verificam
-    string config_file_adress = "..//Database//simulation_setup.txt";
     sim_manager->setConfigFileAdress(config_file_adress);
     sim_manager->loadConfigData();
     sim_manager->displayData();
 
+    cout << endl <<  "Initializare completa. Bine ati venit!" << endl;
+    cout << "Va rog selectati actiunea pe care doriti sa o realizati:" << endl;
+    cout << "1. Incarcare harta din fisier" << endl;
 
 
+    while (status)
+    {
+        switch (selector)
+        {
+            case 1:
+                //TODO
+                break;
+            default:
+                cout << "Optiune necunoscuta. Incearca din nou!" << endl;
+                break;
+        }
+    }
     return 0;
 }

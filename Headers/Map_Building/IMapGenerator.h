@@ -12,7 +12,6 @@ class IMapGenerator : public Map
 {
 public:
     virtual void generateMap(Map& map) = 0;
-    virtual void setConfigFile(string adress) = 0;
 
     virtual ~IMapGenerator() = default;
 };
