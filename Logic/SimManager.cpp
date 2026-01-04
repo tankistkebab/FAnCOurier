@@ -17,6 +17,8 @@ SimManager::SimManager()
     scooters = -1;
     packages = -1;
     spawn_frequency = -1;
+
+    map_generator = nullptr;
 }
 
 SimManager* SimManager::getInstance()

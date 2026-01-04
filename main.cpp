@@ -36,6 +36,8 @@ int main()
         {
             case 1:
                 //TODO
+                string adresa;
+                //sim_manager.
                 break;
             default:
                 cout << "Optiune necunoscuta. Incearca din nou!" << endl;
