@@ -2,6 +2,7 @@
 #define FANCOURIER_SIMMANAGER_H
 #pragma once
 #include "Map_Building/IMapGenerator.h"
+#include "Map_Building/FileMapLoader.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -39,7 +40,8 @@ public:
 
     //SimManager va fi si "Contextul" pentru strategy design pattern
     void setGenerator(unique_ptr<IMapGenerator> generator);
-
+    void FileLoadGenerator();
+    void ProcedurlaGenerator();
 
 
     void setConfigFileAdress(string adress);

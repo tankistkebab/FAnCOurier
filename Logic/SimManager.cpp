@@ -1,6 +1,8 @@
 #include "../Headers/SimManager.h"
 
 #include <ranges>
+
+
 //pentru singleton, instance si constructorul trebuie declarate explicit si in .cpp
 SimManager* SimManager::instance = nullptr;
 
@@ -11,7 +13,7 @@ SimManager::SimManager()
     N = -1;
     ticks = -1;
     stations = -1;
-    clients -1;
+    clients = -1;
     drones = -1;
     robots = -1;
     scooters = -1;
@@ -185,6 +187,15 @@ void SimManager::displayData()
 void SimManager::setGenerator(unique_ptr<IMapGenerator> generator)
 {
     map_generator = move(generator);
+}
+
+void SimManager::FileLoadGenerator()
+{
+    map_generator = make_unique<FileMapLoader>();
+    if (map_generator = nullptr)
+    {
+        throw 1;
+    }
 }
 
 

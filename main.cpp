@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <iostream>
+#include <memory>
 
 #include "Headers/SimManager.h"
 
@@ -41,12 +42,24 @@ int main()
                     //TODO
                     string adresa = "Database//map.txt";
                     sim_manager->setConfigFileAdress(adresa);
+                    sim_manager->FileLoadGenerator();
 
                     break;
                 }
                 catch (int n)
                 {
+                    //Error handling
+                    switch (n)
+                    {
+                        case 1:
+                            cerr << "Eroare la initializarea FileMapLoader. Incearca din nou" << endl;
+                            break;
 
+                        default:
+                            cout << "Eroare necunoscuta." << endl;
+                            exit(EXIT_FAILURE);
+                            break;
+                    }
                 }
             default:
                 cout << "Optiune necunoscuta. Incearca din nou!" << endl;

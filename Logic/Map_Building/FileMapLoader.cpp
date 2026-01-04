@@ -8,6 +8,7 @@ void FileMapLoader::setMapAdress(string adress)
 
 void FileMapLoader::generateMap(Map &map)
 {
+    //TODO
     char c;
     ifstream file;
     file.open(map_adress);
