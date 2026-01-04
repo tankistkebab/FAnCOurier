@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include <utility>
 
 using namespace std;
 
@@ -35,9 +36,9 @@ public:
     //Incarcam in RAM parametrii
     void loadConfigData();
     void readDataFieldFromFile(ifstream* file, string check, int* val_to_set);    //Functie ajutatoare pentru incarcarea datelor
-    void setGenerator()
 
     //SimManager va fi si "Contextul" pentru strategy design pattern
+    void setGenerator(unique_ptr<IMapGenerator> generator);
 
 
 

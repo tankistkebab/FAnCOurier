@@ -25,20 +25,29 @@ int main()
     sim_manager->loadConfigData();
     sim_manager->displayData();
 
-    cout << endl <<  "Initializare completa. Bine ati venit!" << endl;
-    cout << "Va rog selectati actiunea pe care doriti sa o realizati:" << endl;
-    cout << "1. Incarcare harta din fisier" << endl;
-
-
     while (status)
     {
+        cout << endl <<  "Initializare completa. Bine ati venit!" << endl;
+        cout << "Va rog selectati actiunea pe care doriti sa o realizati:" << endl;
+        cout << "1. Incarcare harta din fisier" << endl;
+
+        cin >> selector;
         switch (selector)
         {
+            //Incarcare din fisier
             case 1:
-                //TODO
-                string adresa;
-                //sim_manager.
-                break;
+                try
+                {
+                    //TODO
+                    string adresa = "Database//map.txt";
+                    sim_manager->setConfigFileAdress(adresa);
+
+                    break;
+                }
+                catch (int n)
+                {
+
+                }
             default:
                 cout << "Optiune necunoscuta. Incearca din nou!" << endl;
                 break;

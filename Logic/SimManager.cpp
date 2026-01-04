@@ -56,7 +56,6 @@ void SimManager::readDataFieldFromFile(ifstream *file, string check, int* val_to
     *val_to_set = stoi(value);
 }
 
-
 void SimManager::loadConfigData()
 {
     string line, value;
@@ -181,6 +180,11 @@ void SimManager::displayData()
     cout << "Scooters: " << scooters << endl;
     cout << "Packkages: " << packages << endl;
     cout << "Spawn_Frequency: " << spawn_frequency << endl;
+}
+
+void SimManager::setGenerator(unique_ptr<IMapGenerator> generator)
+{
+    map_generator = move(generator);
 }
 
 
