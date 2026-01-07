@@ -191,6 +191,12 @@ void SimManager::startGeneration() //Starts the map generation and checks if the
 {
     cout << "DEBUG: Incepem generarea" << endl;
     map_generator->generateMap(map);
+    if (!map.integrityCheck())
+    {
+        cerr << "Harta nu este valida! " << endl;
+        throw 5;
+    }
+    cout << "DEBUG: Harta a fost validata cu succes!" << endl;
 }
 
 
