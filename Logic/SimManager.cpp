@@ -87,6 +87,7 @@ void SimManager::loadConfigData()
             exit(EXIT_FAILURE);
         }
 
+        //Nu mai facem variabile M si N, citim si setam direct Rows si Cols in map
         getline(ss, value, ' ');
         map->setRows(stoi(value));
         cout << "DEBUG: Rows a fost instantiat cu: " << map->getRows() << endl;
@@ -95,8 +96,8 @@ void SimManager::loadConfigData()
         map->setCols(stoi(value));
         cout << "DEBUG: Cols a fost instantiat cu: " << map->getCols() << endl;
 
-        //Restul de fielduri sunt standar, deci putem folosi o functie
-        //AM ales sa tin DEBUG-urile aici, in cazul in care apar erori cu pasarea prin referinta
+        //Restul de fielduri sunt standard, deci putem folosi o functie
+        //Am ales sa tin DEBUG-urile aici, in cazul in care apar erori cu pasarea prin referinta
         string check; //Utilizat pentru a verifica formatul fiecarui field citit
 
         //ticks
