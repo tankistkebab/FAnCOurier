@@ -86,12 +86,12 @@ void SimManager::loadConfigData()
 
         //Nu mai facem variabile M si N, citim si setam direct Rows si Cols in map
         getline(ss, value, ' ');
-        map->setRows(stoi(value));
-        cout << "DEBUG: Rows a fost instantiat cu: " << map->getRows() << endl;
+        map.setRows(stoi(value));
+        cout << "DEBUG: Rows a fost instantiat cu: " << map.getRows() << endl;
 
         getline(ss, value);
-        map->setCols(stoi(value));
-        cout << "DEBUG: Cols a fost instantiat cu: " << map->getCols() << endl;
+        map.setCols(stoi(value));
+        cout << "DEBUG: Cols a fost instantiat cu: " << map.getCols() << endl;
 
         //Restul de fielduri sunt standard, deci putem folosi o functie
         //Am ales sa tin DEBUG-urile aici, in cazul in care apar erori cu pasarea prin referinta
@@ -170,8 +170,8 @@ void SimManager::loadConfigData()
 void SimManager::displayData() const
 {
     cout << endl << "========== Displaying the data stored in SimManager ==========" << endl;
-    cout << "Map.rows: " << map->getRows() << endl;
-    cout << "Map.cols: " << map->getCols() << endl;
+    cout << "Map.rows: " << map.getRows() << endl;
+    cout << "Map.cols: " << map.getCols() << endl;
     cout << "Ticks: " << ticks << endl;
     cout << "Stations: " << stations << endl;
     cout << "Clients: " << clients << endl;
@@ -189,7 +189,7 @@ void SimManager::setGenerator(unique_ptr<IMapGenerator> generator)
 
 void SimManager::startGeneration()
 {
-    map_generator->generateMap(*map);
+    map_generator->generateMap(map);
 }
 
 

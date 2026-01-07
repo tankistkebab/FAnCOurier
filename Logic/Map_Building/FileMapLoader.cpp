@@ -6,14 +6,18 @@ void FileMapLoader::setMapAdress(string adress)
     map_adress = adress;
 }
 
-void FileMapLoader::generateMap(Map &map)
+void FileMapLoader::generateMap(Map &map) //Verifica inainte de funtie ca map exista
 {
     //TODO
+    int i, j;
     char c;
 
     ifstream file;
 
-    //DEschidem fisierul
+    i = 0;
+    j = 0;
+
+    //Deschidem fisierul
     file.open(map_adress);
     if (!file.is_open())
     {
@@ -22,9 +26,24 @@ void FileMapLoader::generateMap(Map &map)
     }
 
     //citim caracter cu caracter
-    while (file.get(c))
+    for (i = 0; i < rows; i++)
     {
+        for ( j = 0; i < cols; i++)
+        {
+            file.get(c);
 
+            switch (c)
+            {
+                case '.': //Road
+                    grid[i][j] = CELLTYPE::ROAD;
+                    break;
+                case '#':
+                    //grid[i][j] = CE
+                    break;
+
+            }
+
+        }
     }
 }
 

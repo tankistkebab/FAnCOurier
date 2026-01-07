@@ -12,6 +12,7 @@ using namespace std;
 class Map
 {
 private:
+    //nu le fac const, chiar daca ar trebui, pentru simplitatea codului
     int rows;
     int cols;
 
@@ -33,6 +34,8 @@ public:
 
     Map();
 
+    //Pt ca in interiorul generatoarelor lucram f mult cu clasa harta, declaram generatoare ca friend class
+    //Astefl putem accesa mult mai usor tot ce avem pe aici
     friend class FileMapLoader;
     friend class ProceduralMapGenerator;
 };

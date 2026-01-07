@@ -6,7 +6,7 @@
 class FileMapLoader : public IMapGenerator
 {
 private:
-    string map_adress = "..//..//Database//map.txt";
+    string map_adress = "..//Database//map.txt";
 
 public:
     //TODO

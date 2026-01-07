@@ -17,7 +17,7 @@ class SimManager
 private:
     string config_file_adress;
     int ticks, stations, clients, drones, robots, scooters, packages, spawn_frequency;
-    Map* map; //pointer pentru a-l pasa mai usor
+    Map map;
     //Nota: avand in vedere nr mic de vehicule, le stocam ca int-uri
     //pentru o solutie mai scalable am putea implementa stocare datelor in matrice de vectori de dim n x 2 (nume_variabilaa, valoare)
 
