@@ -9,8 +9,8 @@ SimManager* SimManager::instance = nullptr;
 SimManager::SimManager()
 {
     //initializam cu nr negative pentru a putea descoperi erori in cod mai usor
-    M = -1;
-    N = -1;
+    map->setRows(-1);
+    map->setCols(-1);
     ticks = -1;
     stations = -1;
     clients = -1;
@@ -88,12 +88,12 @@ void SimManager::loadConfigData()
         }
 
         getline(ss, value, ' ');
-        M = stoi(value);
-        cout << "DEBUG: M a fost instantiat cu: " << M << endl;
+        map->setRows(stoi(value));
+        cout << "DEBUG: Rows a fost instantiat cu: " << map->getRows() << endl;
 
         getline(ss, value);
-        N = stoi(value);
-        cout << "DEBUG: N a fost instantiat cu: " << N << endl;
+        map->setCols(stoi(value));
+        cout << "DEBUG: Cols a fost instantiat cu: " << map->getCols() << endl;
 
         //Restul de fielduri sunt standar, deci putem folosi o functie
         //AM ales sa tin DEBUG-urile aici, in cazul in care apar erori cu pasarea prin referinta
@@ -169,7 +169,7 @@ void SimManager::loadConfigData()
     file.close();
 }
 
-void SimManager::displayData()
+void SimManager::displayData() const
 {
     cout << endl << "========== Displaying the data stored in SimManager ==========" << endl;
     cout << "M: " << M << endl;
@@ -189,13 +189,5 @@ void SimManager::setGenerator(unique_ptr<IMapGenerator> generator)
     map_generator = move(generator);
 }
 
-void SimManager::FileLoadGenerator()
-{
-    map_generator = make_unique<FileMapLoader>();
-    if (map_generator = nullptr)
-    {
-        throw 1;
-    }
-}
 
 

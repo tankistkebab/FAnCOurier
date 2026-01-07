@@ -25,6 +25,12 @@ private:
 
 public:
 
+    void setRows(int n);
+    void setCols(int n);
+
+    int getRows();
+    int getCols();
+
     friend class FileMapLoader;
     friend class ProceduralMapGenerator;
 };

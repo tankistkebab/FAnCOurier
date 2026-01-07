@@ -40,10 +40,8 @@ int main()
                 try
                 {
                     //TODO
-                    string adresa = "Database//map.txt";
-                    sim_manager->setConfigFileAdress(adresa);
-                    sim_manager->FileLoadGenerator();
-
+                    //string adresa = "Database//map.txt"; //optional setam adresa hartii
+                    sim_manager->setGenerator(make_unique<FileMapLoader>());
                     break;
                 }
                 catch (int n)

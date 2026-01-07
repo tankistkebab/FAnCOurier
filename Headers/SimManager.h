@@ -16,7 +16,8 @@ class SimManager
 {
 private:
     string config_file_adress;
-    int M, N, ticks, stations, clients, drones, robots, scooters, packages, spawn_frequency;
+    int ticks, stations, clients, drones, robots, scooters, packages, spawn_frequency;
+    Map* map; //pointer pentru a-l pasa mai usor
     //Nota: avand in vedere nr mic de vehicule, le stocam ca int-uri
     //pentru o solutie mai scalable am putea implementa stocare datelor in matrice de vectori de dim n x 2 (nume_variabilaa, valoare)
 
@@ -40,12 +41,10 @@ public:
 
     //SimManager va fi si "Contextul" pentru strategy design pattern
     void setGenerator(unique_ptr<IMapGenerator> generator);
-    void FileLoadGenerator();
-    void ProcedurlaGenerator();
 
 
     void setConfigFileAdress(string adress);
-    void displayData();
+    void displayData() const;
 };
 
 
