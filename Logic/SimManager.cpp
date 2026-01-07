@@ -30,7 +30,6 @@ SimManager* SimManager::getInstance()
     return instance;
 }
 
-
 void SimManager::setConfigFileAdress(string adress)
 {
     config_file_adress = adress;
@@ -186,6 +185,11 @@ void SimManager::displayData() const
 void SimManager::setGenerator(unique_ptr<IMapGenerator> generator)
 {
     map_generator = move(generator);
+}
+
+void SimManager::startGeneration()
+{
+    map_generator->generateMap(*map);
 }
 
 

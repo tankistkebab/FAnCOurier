@@ -50,4 +50,4 @@ public:
 };
 
 
-#endif //FANCOURIER_SIMMANAGER_H0
+#endif //FANCOURIER_SIMMANAGER_H

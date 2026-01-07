@@ -10,7 +10,7 @@ private:
 
 public:
     //TODO
-    void generateMap(Map &map) override;
+    void generateMap(Map& map) override;
     void setMapAdress(string adress);
 };
 
