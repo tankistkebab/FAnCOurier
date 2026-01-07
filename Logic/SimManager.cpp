@@ -173,8 +173,8 @@ void SimManager::loadConfigData()
 void SimManager::displayData() const
 {
     cout << endl << "========== Displaying the data stored in SimManager ==========" << endl;
-    cout << "M: " << M << endl;
-    cout << "N: " << N << endl;
+    cout << "Map.rows: " << map->getRows() << endl;
+    cout << "Map.cols: " << map->getCols() << endl;
     cout << "Ticks: " << ticks << endl;
     cout << "Stations: " << stations << endl;
     cout << "Clients: " << clients << endl;
