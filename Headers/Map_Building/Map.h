@@ -3,6 +3,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <queue>
 #include "../Utils.h"
 
 class IMapGenerator;
@@ -34,6 +35,7 @@ public:
     int getCols() const;
 
     void displayMap();
+    bool integrityCheck();
 
     //Pt ca in interiorul generatoarelor lucram f mult cu clasa harta, declaram generatoare ca friend class
     //Astefl putem accesa mult mai usor tot ce avem pe aici
