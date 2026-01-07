@@ -42,6 +42,7 @@ int main()
                     //TODO
                     //string adresa = "Database//map.txt"; //optional setam adresa hartii
                     sim_manager->setGenerator(make_unique<FileMapLoader>());
+                    sim_manager->startGeneration();
                     break;
                 }
                 catch (int n)

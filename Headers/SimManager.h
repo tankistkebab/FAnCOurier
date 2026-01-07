@@ -42,6 +42,8 @@ public:
     //SimManager va fi si "Contextul" pentru strategy design pattern
     void setGenerator(unique_ptr<IMapGenerator> generator);
 
+    void startGeneration();
+
 
     void setConfigFileAdress(string adress);
     void displayData() const;

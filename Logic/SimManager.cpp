@@ -9,8 +9,6 @@ SimManager* SimManager::instance = nullptr;
 SimManager::SimManager()
 {
     //initializam cu nr negative pentru a putea descoperi erori in cod mai usor
-    map->setRows(-1);
-    map->setCols(-1);
     ticks = -1;
     stations = -1;
     clients = -1;
