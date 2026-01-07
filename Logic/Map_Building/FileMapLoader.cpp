@@ -6,8 +6,6 @@ void FileMapLoader::setMapAdress(string adress)
     map_adress = adress;
 }
 
-
-
 void FileMapLoader::generateMap(Map &map) //Verifica inainte de funtie ca map exista
 {
     //TODO
