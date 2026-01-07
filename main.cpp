@@ -26,9 +26,10 @@ int main()
     sim_manager->loadConfigData();
     sim_manager->displayData();
 
+
+    cout << endl <<  "Initializare completa. Bine ati venit!" << endl;
     while (status)
     {
-        cout << endl <<  "Initializare completa. Bine ati venit!" << endl;
         cout << "Va rog selectati actiunea pe care doriti sa o realizati:" << endl;
         cout << "1. Incarcare harta din fisier" << endl;
 
@@ -53,6 +54,13 @@ int main()
                         case 1:
                             cerr << "Eroare la initializarea FileMapLoader. Incearca din nou" << endl;
                             break;
+                        case 2:
+                            break;
+                        case 3:
+                            cerr << "Eroare la structura hartii" << endl;
+                            break;
+                        case 4:
+                            cerr << "Fisierul s-a terminat prea devreme" << endl;
 
                         default:
                             cout << "Eroare necunoscuta." << endl;
@@ -60,6 +68,7 @@ int main()
                             break;
                     }
                 }
+                break;
             default:
                 cout << "Optiune necunoscuta. Incearca din nou!" << endl;
                 break;

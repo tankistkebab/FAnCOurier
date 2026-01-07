@@ -6,58 +6,63 @@ void FileMapLoader::setMapAdress(string adress)
     map_adress = adress;
 }
 
-void FileMapLoader::generateMap(Map &map) //Verifica inainte de funtie ca map exista
+void FileMapLoader::generateMap(Map &map)
 {
-    //TODO
-    int i, j;
+    cout << "DEBUG: Incepem citirea hartii" << endl;
+
     char c;
+    int i, j;
 
-    ifstream file;
-
-    i = 0;
-    j = 0;
-
-    //Deschidem fisierul
-    file.open(map_adress);
+    ifstream file(map_adress);
     if (!file.is_open())
     {
-        cerr << "Eroare la deschiderea fisierului cu harta. Adresa fisierului este: " << map_adress << endl;
+        cerr << "Eroare la deschiderea fisierului: " << map_adress << endl;
         throw 1;
     }
 
-    //citim caracter cu caracter
+    //dimensionam harta
+    map.grid.resize(map.rows, vector<CELLTYPE>(map.cols, CELLTYPE::EMPTY_SPACE));
+
     for (i = 0; i < map.rows; i++)
     {
-        for ( j = 0; i <= map.cols; i++)
+        for (j = 0; j < map.cols; j++)
         {
             file.get(c);
+
+            //Check daca am terminat fisierul
+            if (file.eof())
+            {
+                throw 4;
+            }
+
+            //Check pentru enter
+            if (c == '\n' || c == '\r') {
+                cerr << "Eroare: Linia " << i << " este mai scurta decat " << map.cols << endl;
+                throw 3;
+            }
 
             switch (c)
             {
                 case '.':
                     map.grid[i][j] = CELLTYPE::ROAD;
                     break;
-
                 case '#':
                     map.grid[i][j] = CELLTYPE::WALL;
                     break;
 
                 case 'B':
                     map.grid[i][j] = CELLTYPE::BASE;
-                    //salvam si coord bazei
                     map.baza.x = i;
                     map.baza.y = j;
                     break;
 
                 case 'S':
                     map.grid[i][j] = CELLTYPE::CHARGING_STATION;
-                    // salvam in buffer-ul de statii
                     map.chargingStationsLocations.push_back({i, j});
                     break;
 
                 case 'D':
                     map.grid[i][j] = CELLTYPE::CLIENT;
-                    // salvam in bufferul de clienti
                     map.clientsLocations.push_back({i, j});
                     break;
 
@@ -65,26 +70,29 @@ void FileMapLoader::generateMap(Map &map) //Verifica inainte de funtie ca map ex
                     map.grid[i][j] = CELLTYPE::EMPTY_SPACE;
                     break;
 
-                case '/n':
-                    //Verificam daca '/n' se afla unde trebuie
-                    if (i != map.cols)
-                    {
-                        cerr << "Eroare la structura hartii" << endl;
-                        throw 3;
-                    }
-                    break;
-
-                case EOF:
-                    cerr << "Final de fisier" << endl;
-                    throw 3;
-
                 default:
-                    //eroare
-                    cerr << "Caracter nerecunoscut in fisier: " << c << endl;
+                    cerr << "Caracter necunoscut: " << (int)c << endl;
                     throw 2;
-                    break;
             }
         }
+
+        file.get(c);
+
+        // Aparent windows are fetish cu a pune \r\n. rezolvam aici
+        if (c == '\r')
+            {
+            file.get(c); // Consumam '\n'
+        }
+
+        if (c != '\n' && !file.eof())
+            {
+            cerr << "Eroare: Linia " << i << " este mai LUNGA decat " << map.cols << endl;
+            throw 3;
+        }
     }
+
+    map.displayMap();
+    file.close();
+    cout << endl << "DEBUG: Generare cu succes" << endl;
 }
 

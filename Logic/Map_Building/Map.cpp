@@ -33,6 +33,7 @@ void Map::displayMap()
 {
     int i, j;
 
+    cout << endl;
     for (i =  0; i < rows; i++)
     {
         for (j = 0; j < cols; j++)
@@ -61,7 +62,7 @@ void Map::displayMap()
                     cerr << "EROARE CRITICA: Harta contine caractere ilegale." << endl;
                     exit(EXIT_FAILURE);
             }
-            cout << "\n" << endl;
         }
+        cout << endl;
     }
 }
