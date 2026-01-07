@@ -21,10 +21,11 @@ private:
 
     //Cache pentru statii, clienti si Baza (puncte de interes)
     vector<POINT> chargingStationsLocations;
-    vector<POINT> clientsLocatioons;
+    vector<POINT> clientsLocations;
     POINT baza;
 
 public:
+    Map();
 
     void setRows(int n);
     void setCols(int n);
@@ -32,7 +33,7 @@ public:
     int getRows() const;
     int getCols() const;
 
-    Map();
+    void displayMap();
 
     //Pt ca in interiorul generatoarelor lucram f mult cu clasa harta, declaram generatoare ca friend class
     //Astefl putem accesa mult mai usor tot ce avem pe aici

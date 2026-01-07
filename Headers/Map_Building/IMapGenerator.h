@@ -7,8 +7,10 @@
 
 using namespace std;
 
+class Map;
+
 // paradigma strategy
-class IMapGenerator : public Map
+class IMapGenerator
 {
 public:
     virtual void generateMap(Map& map) = 0;

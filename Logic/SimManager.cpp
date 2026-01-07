@@ -187,7 +187,7 @@ void SimManager::setGenerator(unique_ptr<IMapGenerator> generator)
     map_generator = move(generator);
 }
 
-void SimManager::startGeneration()
+void SimManager::startGeneration() //Starts the map generation and checks if the map is valid.
 {
     map_generator->generateMap(map);
 }

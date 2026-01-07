@@ -6,6 +6,8 @@ void FileMapLoader::setMapAdress(string adress)
     map_adress = adress;
 }
 
+
+
 void FileMapLoader::generateMap(Map &map) //Verifica inainte de funtie ca map exista
 {
     //TODO
@@ -26,23 +28,64 @@ void FileMapLoader::generateMap(Map &map) //Verifica inainte de funtie ca map ex
     }
 
     //citim caracter cu caracter
-    for (i = 0; i < rows; i++)
+    for (i = 0; i < map.rows; i++)
     {
-        for ( j = 0; i < cols; i++)
+        for ( j = 0; i <= map.cols; i++)
         {
             file.get(c);
 
             switch (c)
             {
-                case '.': //Road
-                    grid[i][j] = CELLTYPE::ROAD;
+                case '.':
+                    map.grid[i][j] = CELLTYPE::ROAD;
                     break;
+
                 case '#':
-                    //grid[i][j] = CE
+                    map.grid[i][j] = CELLTYPE::WALL;
                     break;
 
-            }
+                case 'B':
+                    map.grid[i][j] = CELLTYPE::BASE;
+                    //salvam si coord bazei
+                    map.baza.x = i;
+                    map.baza.y = j;
+                    break;
 
+                case 'S':
+                    map.grid[i][j] = CELLTYPE::CHARGING_STATION;
+                    // salvam in buffer-ul de statii
+                    map.chargingStationsLocations.push_back({i, j});
+                    break;
+
+                case 'D':
+                    map.grid[i][j] = CELLTYPE::CLIENT;
+                    // salvam in bufferul de clienti
+                    map.clientsLocations.push_back({i, j});
+                    break;
+
+                case 'X':
+                    map.grid[i][j] = CELLTYPE::EMPTY_SPACE;
+                    break;
+
+                case '/n':
+                    //Verificam daca '/n' se afla unde trebuie
+                    if (i != map.cols)
+                    {
+                        cerr << "Eroare la structura hartii" << endl;
+                        throw 3;
+                    }
+                    break;
+
+                case EOF:
+                    cerr << "Final de fisier" << endl;
+                    throw 3;
+
+                default:
+                    //eroare
+                    cerr << "Caracter nerecunoscut in fisier: " << c << endl;
+                    throw 2;
+                    break;
+            }
         }
     }
 }
