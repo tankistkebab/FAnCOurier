@@ -21,6 +21,7 @@ void FileMapLoader::generateMap(Map &map)
     }
 
     //dimensionam harta
+    map.grid.clear();
     map.grid.resize(map.rows, vector<CELLTYPE>(map.cols, CELLTYPE::EMPTY_SPACE));
 
     for (i = 0; i < map.rows; i++)
