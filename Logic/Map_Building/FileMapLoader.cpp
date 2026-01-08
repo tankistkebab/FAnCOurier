@@ -20,8 +20,12 @@ void FileMapLoader::generateMap(Map &map)
         throw 1;
     }
 
-    //dimensionam harta
+    //curatam listele vechi (safety feature)
     map.grid.clear();
+    map.chargingStationsLocations.clear();
+    map.clientsLocations.clear();
+
+    //dimensionam harta
     map.grid.resize(map.rows, vector<CELLTYPE>(map.cols, CELLTYPE::EMPTY_SPACE));
 
     for (i = 0; i < map.rows; i++)
