@@ -43,6 +43,7 @@ public:
     friend class ProceduralMapGenerator;
     friend class Agent;
     friend class Pathfinder;
+    friend class HiveMind;
 };
 
 

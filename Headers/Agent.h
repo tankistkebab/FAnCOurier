@@ -78,6 +78,8 @@ public:
     int getCost() const;
     MOVEMENTMODE getMovementMode() const;
     char getSymbol() const;
+    int getBatteryConsumption() const;
+    AGENTSTATE getState() const;
 
     //fiecare agent isi returneaza tipul
     virtual AGENTTYPE getType() const = 0;

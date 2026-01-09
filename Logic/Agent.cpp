@@ -52,6 +52,16 @@ char Agent::getSymbol() const
     return stats.symbol;
 }
 
+AGENTSTATE Agent::getState() const
+{
+    return state;
+}
+
+int Agent::getBatteryConsumption() const
+{
+    return stats.batteryCons;
+}
+
 
 void Agent::update()
 {
