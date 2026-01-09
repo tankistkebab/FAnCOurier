@@ -42,6 +42,7 @@ public:
     friend class FileMapLoader;
     friend class ProceduralMapGenerator;
     friend class Agent;
+    friend class Pathfinder;
 };
 
 

@@ -20,4 +20,7 @@ add_executable(FAnCOurier main.cpp
         Headers/Agent.h
         Logic/CustomAgents.cpp
         Headers/CustomAgents.h
-        Headers/Package.h)
+        Headers/Package.h
+        Headers/Pathfinder.h
+        Logic/HiveMind.cpp
+        Headers/HiveMind.h)
