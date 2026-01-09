@@ -41,6 +41,7 @@ public:
     //Astefl putem accesa mult mai usor tot ce avem pe aici
     friend class FileMapLoader;
     friend class ProceduralMapGenerator;
+    friend class Agent;
 };
 
 
