@@ -9,25 +9,25 @@
 
 using namespace std;
 
-enum class AgentType
+enum class AGENTTYPE
 {
     DRONE,
     ROBOT,
     SCOOTER
 };
 
-enum class MovementMode
+enum class MOVEMENTMODE
 {
     GROUND,
     AIR
 };
 
-enum class AgentState
+enum class AGENTSTATE
 {
     IDLE,
     MOVING,
     CHARGING,
-    DEAD        // [cite: 47]
+    DEAD
 };
 
 //struct pentru a nu avea o gramada de variabile imprastiate si a face codul mai lizibil
@@ -35,7 +35,7 @@ struct AgentStats
 {
     char symbol;
     std::string name;
-    MovementMode mode;
+    MOVEMENTMODE mode;
     int speed;          // pasi per tick
     int maxBattery;
     int batteryCons;    // consum per tick
@@ -52,7 +52,7 @@ protected:
     POINT position;
 
     float currentBattery;
-    AgentState state;
+    AGENTSTATE state;
 
     AgentStats stats;
 
@@ -76,11 +76,11 @@ public:
     float getBattery() const;
     int getCapacity() const;
     int getCost() const;
-    MovementMode getMovementMode() const;
+    MOVEMENTMODE getMovementMode() const;
     char getSymbol() const;
 
     //fiecare agent isi returneaza tipul
-    virtual AgentType getType() const = 0;
+    virtual AGENTTYPE getType() const = 0;
 
     //loopul de apelat la inceput
     void update();

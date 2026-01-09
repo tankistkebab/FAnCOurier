@@ -3,13 +3,13 @@
 Agent::Agent(int _id, POINT _startPos, const Map* _map)
     : id(_id), position(_startPos), map(_map)
 {
-    state = AgentState::IDLE;
+    state = AGENTSTATE::IDLE;
 }
 
 
 bool Agent::isDead() const
 {
-    if (state == AgentState::DEAD)
+    if (state == AGENTSTATE::DEAD)
     {
         return true;
     }
@@ -17,7 +17,7 @@ bool Agent::isDead() const
 }
 bool Agent::isIdle() const
 {
-    if (state == AgentState::IDLE)
+    if (state == AGENTSTATE::IDLE)
     {
         return true;
     }
@@ -43,7 +43,7 @@ int Agent::getCost() const
 {
     return stats.costPerTick;
 }
-MovementMode Agent::getMovementMode() const
+MOVEMENTMODE Agent::getMovementMode() const
 {
     return stats.mode;
 }
@@ -59,14 +59,14 @@ void Agent::update()
 
     CELLTYPE cell;
 
-    if (state == AgentState::DEAD)
+    if (state == AGENTSTATE::DEAD)
     {
         return;
     }
 
     switch (state)
     {
-        case AgentState::MOVING:
+        case AGENTSTATE::MOVING:
             //consumam baterie per tick
             currentBattery -= stats.batteryCons;
 
@@ -74,7 +74,7 @@ void Agent::update()
             if (currentBattery <= 0)
             {
                 currentBattery = 0;
-                state = AgentState::DEAD;
+                state = AGENTSTATE::DEAD;
                 cout << "DEBUG: Agent " << id << " (" << stats.name << ") nu mai are baterie" << endl;
                 return;
             }
@@ -89,30 +89,30 @@ void Agent::update()
                 else
                 {
                     //am terminat drumul
-                    state = AgentState::IDLE;
+                    state = AGENTSTATE::IDLE;
 
                     //check daca am aterizat pe o statie de incarcat
                     cell = map->grid[position.x][position.y];
                     if (cell == CELLTYPE::BASE || cell == CELLTYPE::CHARGING_STATION)
                     {
-                        state = AgentState::CHARGING;
+                        state = AGENTSTATE::CHARGING;
                     }
                     break;
                 }
             }
             break;
 
-        case AgentState::CHARGING:
+        case AGENTSTATE::CHARGING:
             chargeStep();
             break;
 
-        case AgentState::IDLE:
+        case AGENTSTATE::IDLE:
             //check daca am aterizat pe o statie de incarcat
             cell = map->grid[position.x][position.y];
 
             if ((cell == CELLTYPE::BASE || cell == CELLTYPE::CHARGING_STATION) && currentBattery < stats.maxBattery)
             {
-                state = AgentState::CHARGING;
+                state = AGENTSTATE::CHARGING;
             }
             break;
         default:
@@ -137,13 +137,13 @@ void Agent::chargeStep() {
     if (currentBattery >= stats.maxBattery)
     {
         currentBattery = stats.maxBattery;
-        state = AgentState::IDLE; //baterie full
+        state = AGENTSTATE::IDLE; //baterie full
     }
 }
 
 void Agent::assignPath(const vector<POINT>& newPath)
 {
-    if (state == AgentState::DEAD)
+    if (state == AGENTSTATE::DEAD)
     {
         return;
     }
@@ -151,6 +151,6 @@ void Agent::assignPath(const vector<POINT>& newPath)
     currentPath = newPath;
     if (!currentPath.empty())
     {
-        state = AgentState::MOVING;
+        state = AGENTSTATE::MOVING;
     }
 }

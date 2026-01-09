@@ -17,4 +17,6 @@ add_executable(FAnCOurier main.cpp
         "Logic/Map_Building/ProceduralMapGenerator.cpp"
         "Headers/Map_Building/ProceduralMapGenerator.h"
         Logic/Agent.cpp
-        Headers/Agent.h)
+        Headers/Agent.h
+        Logic/CustomAgents.cpp
+        Headers/CustomAgents.h)
