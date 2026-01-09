@@ -35,6 +35,9 @@ public:
 
     static SimManager* getInstance();
 
+    int getClients();
+    int getStations();
+
     //Incarcam in RAM parametrii
     void loadConfigData();
     void readDataFieldFromFile(ifstream* file, string check, int* val_to_set);    //Functie ajutatoare pentru incarcarea datelor

@@ -30,6 +30,16 @@ SimManager* SimManager::getInstance()
     return instance;
 }
 
+int SimManager::getClients()
+{
+    return clients;
+}
+
+int SimManager::getStations()
+{
+    return stations;
+}
+
 void SimManager::setConfigFileAdress(string adress)
 {
     config_file_adress = adress;
@@ -191,6 +201,8 @@ void SimManager::startGeneration() //Starts the map generation and checks if the
 {
     cout << "DEBUG: Incepem generarea" << endl;
     map_generator->generateMap(map);
+
+    //Add integrity check to see if the map has a wall border
     if (!map.integrityCheck())
     {
         cerr << "Harta nu este valida! " << endl;
