@@ -15,7 +15,7 @@ SimManager::SimManager()
     drones = -1;
     robots = -1;
     scooters = -1;
-    packages = -1;
+    packages_total = -1;
     spawn_frequency = -1;
 
     map_generator = nullptr;
@@ -157,8 +157,8 @@ void SimManager::loadConfigData()
         //Citim datele de dinamica
         //packages
         check = "TOTAL_PACKAGES:";
-        readDataFieldFromFile(&file, check, &packages);
-        cout << "DEBUG: packages a fost instantiat cu: " << packages << endl;
+        readDataFieldFromFile(&file, check, &packages_total);
+        cout << "DEBUG: packages a fost instantiat cu: " << packages_total << endl;
 
         //spawn frequency
         check = "SPAWN_FREQUENCY:";
@@ -188,7 +188,7 @@ void SimManager::displayData() const
     cout << "Drones: " << drones << endl;
     cout << "Robots: " << robots << endl;
     cout << "Scooters: " << scooters << endl;
-    cout << "Packkages: " << packages << endl;
+    cout << "Packages: " << packages_total << endl;
     cout << "Spawn_Frequency: " << spawn_frequency << endl;
 }
 
@@ -209,6 +209,216 @@ void SimManager::startGeneration() //Starts the map generation and checks if the
         throw 5;
     }
     cout << "DEBUG: Harta a fost validata cu succes!" << endl;
+}
+
+void SimManager::initFleet() {
+    fleet.clear();
+
+    int i, idCounter;
+    idCounter = 1;
+
+    for(i = 0; i < drones; ++i)
+    {
+        fleet.push_back(new Drone(idCounter++, map.baza, &map));
+    }
+
+    for(i = 0; i < robots; ++i)
+    {
+        fleet.push_back(new Robot(idCounter++, map.baza, &map));
+    }
+
+    for(i = 0; i < scooters; ++i)
+    {
+        fleet.push_back(new Scooter(idCounter++, map.baza, &map));
+    }
+
+    cout << "DEBUG: Flota initializata cu " << fleet.size() << " agenti." << endl;
+}
+
+void SimManager::spawnPackage()
+{
+    static int pkgIdCounter = 1;
+    static mt19937 rng(random_device{}());
+
+    if (map.clientsLocations.empty())
+    {
+        return;
+    }
+    //alegem un client random
+    uniform_int_distribution<int> distClient(0, map.clientsLocations.size() - 1);
+    POINT dest = map.clientsLocations[distClient(rng)];
+
+    //generam random un reward si un deadline
+    uniform_int_distribution<int> distReward(200, 800);
+    uniform_int_distribution<int> distDeadline(10, 20);
+
+    packages.emplace_back(pkgIdCounter++, dest, distReward(rng), currentTick, distDeadline(rng));
+
+    cout << "DEBUG: Pachet generat (ID: " << pkgIdCounter-1 << ") catre Client." << endl;
+}
+
+void SimManager::generateFinalReport()
+{
+    int deliveredCount, totalRewards, missedCount, deadAgents;
+    int penaltyDeadAgents, penaltyMissedPackages, totalPenalties;
+
+    long totalOperatingCost, finalProfit;
+
+
+    ofstream report("..//simulation.txt");
+
+    if (!report.is_open())
+    {
+        cerr << "Eroare la crearea fisierului pentru raportul final" << endl;
+        return;
+    }
+
+    deliveredCount = 0;
+    totalRewards = 0;
+    missedCount = 0;
+
+    for (const auto& pkg : packages)
+    {
+        if (pkg.status == PACKAGESTATUS::DELIVERED)
+        {
+            deliveredCount++;
+            totalRewards += pkg.reward;
+        }
+        else
+        {
+            missedCount++;
+        }
+    }
+
+    //agenti si costuri de operatie
+    deadAgents = 0;
+    totalOperatingCost = 0;
+
+    for (const auto* agent : fleet)
+    {
+        if (agent->isDead())
+        {
+            deadAgents++;
+        }
+
+        //Costul agentului * Durata simularii
+        //Nota: Ar trebui sa tin cont cat timp a stat agentul mort, dar e prea tarziu sa mai schimb asta acm
+        if (!agent->isDead())
+        {
+             totalOperatingCost += (long)agent->getCost() * currentTick;
+        }
+        else
+        {
+             totalOperatingCost += (long)agent->getCost() * currentTick;
+        }
+    }
+
+    //penalizari
+    penaltyDeadAgents = deadAgents * 500;
+    penaltyMissedPackages = missedCount * 200;
+    totalPenalties = penaltyDeadAgents + penaltyMissedPackages;
+
+    finalProfit = totalRewards - totalOperatingCost - totalPenalties;
+
+    report << "Raport simulare Hivemind! Nota: Anumite date nu sunt precise, ci se bazeaza pe estimari worst case scenario." << endl << endl;
+
+    report << "Durata Simulare: " << currentTick << " / " << ticks << " ticks" << std::endl;
+    report << "Total Agenti: " << fleet.size() << endl;
+    report << "Total Pachete: " << packages.size() << endl;
+    report << endl;
+
+    report << "Pachete Livrate: " << deliveredCount << " (" << (packages.size() ? (deliveredCount * 100 / packages.size()) : 0) << "%)" << endl;
+    report << "Pachete Ratate: " << missedCount << endl;
+    report << "Agenti Pierduti: " << deadAgents << " (Dead Battery)" << endl;
+    report << endl;
+
+    report << "Venituri (Rewards): +" << totalRewards << endl;
+    report << "Costuri Operare: -" << totalOperatingCost << endl;
+    report << "Penalizari: -" << totalPenalties << endl;
+    report << "Agenti morti: " << penaltyDeadAgents << ")" << endl;
+    report << "Pachete ratate: " << penaltyMissedPackages << ")" << endl;
+    report << "PROFIT NET FINAL: " << finalProfit << endl;
+    report << endl;
+
+    if (finalProfit > 0)
+    {
+        report << "REZULTAT: SUCCES (Profitabil)" << endl;
+    }
+    else
+    {
+        report << "REZULTAT: FALIMENT (Pierdere)" << endl;
+    }
+
+    report.close();
+    cout << "Raport generat cu succes in 'simulation.txt'." << endl;
+}
+
+void SimManager::run()
+{
+    bool generationFinished, activePackagesExist;
+
+    cout << "\n=== START SIMULARE HIVEMIND ===\n" << endl;
+
+    initFleet();
+    packages.clear();
+    currentTick = 0;
+
+    hiveMind = make_unique<HiveMind>(&map, fleet, packages);
+
+    while (currentTick < ticks)
+    {
+        cout << endl << "TICK: " << currentTick + 1 << " / " << ticks <<  endl;
+
+        //generam pachetele daca nu am atins limita
+        if (currentTick % spawn_frequency == 0 && packages.size() < packages_total)
+        {
+            spawnPackage();
+        }
+
+        //update la hivemind si agenti
+        hiveMind->update(currentTick);
+        for (auto* agent : fleet) //din nou, fancy rau variabile de tip auto si foreach loopurile
+        {
+            agent->update();
+        }
+
+        //check daca am livrat toate pachetele
+        if (packages.size() >= packages_total)
+        {
+            generationFinished = true;
+        }
+        else
+        {
+            generationFinished = false;
+        }
+
+
+        //check pentru pachetele in livrare
+        activePackagesExist = false;
+        for (const auto& pkg : packages)
+        {
+            if (pkg.status == PACKAGESTATUS::PENDING || pkg.status == PACKAGESTATUS::ASSIGNED)
+            {
+                activePackagesExist = true;
+                cout << pkg.id << endl;
+                break;
+            }
+        }
+
+        cout << endl << "generationFinished = " << generationFinished << endl << "activePackegesExist = " << activePackagesExist << endl;
+
+        if (generationFinished && !activePackagesExist)
+        {
+            cout << "Toate pachetele au fost livrate. Simularea se opreste anticipat la Tick:  " << currentTick + 1 << endl;
+            break;
+        }
+
+        //avans timpul
+        currentTick++;
+    }
+
+    cout << "Simularea s-a terminat" << endl;
+    generateFinalReport();
 }
 
 

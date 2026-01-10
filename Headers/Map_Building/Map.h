@@ -44,6 +44,7 @@ public:
     friend class Agent;
     friend class Pathfinder;
     friend class HiveMind;
+    friend class SimManager;
 };
 
 

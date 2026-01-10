@@ -62,6 +62,24 @@ int Agent::getBatteryConsumption() const
     return stats.batteryCons;
 }
 
+float Agent::getMaxBattery() const
+{
+    return stats.maxBattery;
+}
+
+int Agent::getSpeed() const
+{
+    return stats.speed;
+}
+
+POINT Agent::getFinalDestination() const
+{
+    if (!currentPath.empty())
+    {
+        return currentPath.back();
+    }
+    return position;
+}
 
 void Agent::update()
 {

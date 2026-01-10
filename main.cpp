@@ -34,6 +34,7 @@ int main()
         cout << "Va rog selectati actiunea pe care doriti sa o realizati:" << endl;
         cout << "1. Incarcare harta din fisier" << endl;
         cout << "2. Generare procedurala" << endl;
+        cout << "0. Iesire" << endl;
 
         cin >> selector;
         switch (selector)
@@ -46,6 +47,9 @@ int main()
                     //string adresa = "Database//map.txt"; //optional setam adresa hartii
                     sim_manager->setGenerator(make_unique<FileMapLoader>());
                     sim_manager->startGeneration();
+
+                    sim_manager->run();
+                    status = 0;
                     break;
                 }
                 catch (int n)
@@ -82,6 +86,9 @@ int main()
 
                     sim_manager->setGenerator(make_unique<ProceduralMapGenerator>(sim_manager->getClients(), sim_manager->getStations(), procent));
                     sim_manager->startGeneration();
+
+                    sim_manager->run();
+                    status = 0;
                     break;
                 }
                 catch (int n)

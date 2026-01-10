@@ -3,12 +3,16 @@
 #pragma once
 #include "Map_Building/IMapGenerator.h"
 #include "Map_Building/FileMapLoader.h"
+#include "Agent.h"
+#include "CustomAgents.h"
+#include "Package.h"
+#include "HiveMind.h"
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>
+#include <vector>
 #include <memory>
-#include <utility>
+#include <random>
 
 using namespace std;
 
@@ -16,41 +20,51 @@ class SimManager
 {
 private:
     string config_file_adress;
-    int ticks, stations, clients, drones, robots, scooters, packages, spawn_frequency;
-    Map map;
-    //Nota: avand in vedere nr mic de vehicule, le stocam ca int-uri
-    //pentru o solutie mai scalable am putea implementa stocare datelor in matrice de vectori de dim n x 2 (nume_variabilaa, valoare)
+    int ticks, stations, clients, packages_total, drones, robots, scooters, spawn_frequency;
 
-    //Uniqeu pointer pentru paradigma Strategy (evitam memory leak-uri)
+    int currentTick = 0;
+
+    Map map;
+
+    vector<Agent*> fleet;
+    vector<Package> packages;
+    unique_ptr<HiveMind> hiveMind;
+
     unique_ptr<IMapGenerator> map_generator;
 
-    //Avem nevoi de 1 manager pt toata simularea, deci il facem singleton
+    // Singleton stuff
     static SimManager* instance;
     SimManager();
 
+
+
+    void initFleet();
+    void spawnPackage();
+
 public:
-    //Stergem copy constructori pt a-l face singleton
+    // Singleton stuff
     SimManager(const SimManager&) = delete;
-    void operator==(const SimManager&) = delete;
+    void operator=(const SimManager&) = delete;
 
     static SimManager* getInstance();
 
+    // Getteri
     int getClients();
     int getStations();
 
-    //Incarcam in RAM parametrii
+    // Config
+    void setConfigFileAdress(string adress);
     void loadConfigData();
-    void readDataFieldFromFile(ifstream* file, string check, int* val_to_set);    //Functie ajutatoare pentru incarcarea datelor
+    void readDataFieldFromFile(ifstream* file, string check, int* val_to_set);
+    void displayData() const;
 
-    //SimManager va fi si "Contextul" pentru strategy design pattern
     void setGenerator(unique_ptr<IMapGenerator> generator);
-
     void startGeneration();
 
+    void run();
 
-    void setConfigFileAdress(string adress);
-    void displayData() const;
+    // Raport final
+    void generateFinalReport();
 };
-
 
 #endif //FANCOURIER_SIMMANAGER_H

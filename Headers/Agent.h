@@ -74,12 +74,15 @@ public:
     POINT getPosition() const;
     int getId() const;
     float getBattery() const;
+    float getMaxBattery() const;
     int getCapacity() const;
     int getCost() const;
+    int getSpeed() const;
     MOVEMENTMODE getMovementMode() const;
     char getSymbol() const;
     int getBatteryConsumption() const;
     AGENTSTATE getState() const;
+    POINT getFinalDestination() const;
 
     //fiecare agent isi returneaza tipul
     virtual AGENTTYPE getType() const = 0;

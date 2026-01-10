@@ -3,16 +3,34 @@
 #include <iostream>
 #include <limits>
 
-void HiveMind::update()
+void HiveMind::update(int tick)
 {
-    //intai verificam daca s-au livrat pachete
+    this->currentTick = tick; // Salvam tick-ul curent
+
     checkDeliveries();
-
-    //verificam bateriile
+    checkDeadlines(tick); // Folosim tick
     checkBatteryLevels();
+    assignTasks(); // Acum assignTasks are acces la this->currentTick corect
+}
 
-    //alocam taskuirle
-    assignTasks();
+void HiveMind::checkDeadlines(int currentTick)
+{
+    int expiryTick;
+
+    for (auto& pkg : packages)
+    {
+        if (pkg.status == PACKAGESTATUS::PENDING || pkg.status == PACKAGESTATUS::ASSIGNED)
+        {
+            //calc momentul expirarii
+            expiryTick = pkg.creationTime + pkg.deadlineTicks;
+
+            if (currentTick > expiryTick)
+            {
+                pkg.status = PACKAGESTATUS::EXPIRED;
+                cout << "[INFO] Pachetul " << pkg.id << " a EXPIRAT (Missed Deadline)." << endl;
+            }
+        }
+    }
 }
 
 void HiveMind::checkDeliveries()
@@ -51,65 +69,99 @@ void HiveMind::checkDeliveries()
 
 void HiveMind::checkBatteryLevels()
 {
-    int dist, buffer, consumption, safeBatteryLevel;
-    int stepsPerTick, ticksNeeded;
+    for (Agent* agent : fleet) {
+        if (agent->isDead()) continue;
+        if (agent->getState() == AGENTSTATE::CHARGING) continue;
 
-
-    for (Agent* agent : fleet)
-    {
-        if (agent->isDead())
-        {
+        // Ignoram daca e deja la baza/statie (safety check simplu)
+        POINT pos = agent->getPosition();
+        if (map->grid[pos.x][pos.y] == CELLTYPE::BASE ||
+            map->grid[pos.x][pos.y] == CELLTYPE::CHARGING_STATION) {
             continue;
         }
 
-        //calc distanta pana la cea mai apropiata statie
-        POINT nearestStation = findNearestChargingStation(agent->getPosition(), agent->getMovementMode());
-        dist = ManhattanDist(agent->getPosition(), nearestStation);
+        // --- PARAMETRI ---
+        int consumption = agent->getBatteryConsumption();
+        int speed = agent->getSpeed();
+        double mazeFactor = (agent->getMovementMode() == MOVEMENTMODE::AIR) ? 1.0 : 1.4;
+        int flatBuffer = 10; // Reducem bufferul "panicat" la 10 (1-2 pasi)
 
-        //estimare consum
-        if (agent->getMovementMode() == MOVEMENTMODE::AIR)
-        {
-            stepsPerTick = 3;
+        // --- PASUL 1: VERIFICARE MISIUNE (COMMITMENT) ---
+        // Daca agentul are o treaba (se misca spre ceva ce nu e statie), verificam daca o poate termina
+        if (agent->getState() == AGENTSTATE::MOVING) {
+            POINT currentDest = agent->getFinalDestination();
+
+            // Verificam daca destinatia curenta este o Statie/Baza
+            bool isGoingToStation = (map->grid[currentDest.x][currentDest.y] == CELLTYPE::BASE ||
+                                     map->grid[currentDest.x][currentDest.y] == CELLTYPE::CHARGING_STATION);
+
+            // Daca NU merge spre o statie (deci livreaza sau ridica pachet), aplicam logica triunghiulara
+            if (!isGoingToStation) {
+                // A. Costul sa ajunga la destinatie (Client)
+                int distToDest = ManhattanDist(pos, currentDest);
+                int costToFinishJob = ((distToDest * mazeFactor + speed - 1) / speed) * consumption;
+
+                // B. Costul de la destinatie la cea mai apropiata statie (Future Safe Haven)
+                // Gasim cea mai apropiata statie fata de CLIENT, nu fata de unde suntem acum!
+                POINT nearestStationFromDest = findNearestChargingStation(currentDest, agent->getMovementMode());
+                int distDestToStation = ManhattanDist(currentDest, nearestStationFromDest);
+                int costAfterJob = ((distDestToStation * mazeFactor + speed - 1) / speed) * consumption;
+
+                // C. Cost Total
+                int totalMissionCost = costToFinishJob + costAfterJob + flatBuffer;
+
+                // D. DECIZIA: Daca avem baterie pentru TOT circuitul, IGNORAM panica de moment
+                if (agent->getBattery() >= totalMissionCost) {
+                    continue; // <--- LASA-L SA MEARGA! E SAFE.
+                }
+            } else {
+                 // Daca merge deja spre o statie, il lasam in pace (verificare existenta)
+                 if (currentDest.x == findNearestChargingStation(pos, agent->getMovementMode()).x &&
+                     currentDest.y == findNearestChargingStation(pos, agent->getMovementMode()).y) {
+                     continue;
+                 }
+            }
         }
-        else
-        {
-            stepsPerTick = 1;
-        }
 
-        ticksNeeded = dist / stepsPerTick;
+        // --- PASUL 2: FALLBACK (LOGICA DE PANICA) ---
+        // Daca am ajuns aici, inseamna ca agentul NU poate termina misiunea (sau sta degeaba).
+        // Trebuie sa vedem daca se poate salva ACUM.
 
-        consumption = agent->getBatteryConsumption();
-       safeBatteryLevel = (ticksNeeded * consumption) + buffer;
-       buffer = 20;
+        POINT nearestStation = findNearestChargingStation(pos, agent->getMovementMode());
+        int distToStation = ManhattanDist(pos, nearestStation);
+        int ticksReturn = (distToStation * mazeFactor + speed - 1) / speed;
+        int costReturn = ticksReturn * consumption;
 
-        //check daca avem suficienta baterie ca sa ne intoarcem + buffer de safety
-        if (agent->getBattery() < safeBatteryLevel && agent->getState() != AGENTSTATE::CHARGING && agent->getState() != AGENTSTATE::DEAD)
-        {
-            //fortam robotul sa se intoarca
-            cout << "ALERTA: Agent " << agent->getId() << " are bateria in critica! Se intoarce la statie." << std::endl;
+        // Aici folosim un buffer un pic mai mare pentru siguranta imediata
+        int panicThreshold = costReturn + 15;
 
-            vector<POINT> pathToStation = Pathfinder::findPath(agent->getPosition(), nearestStation, map, agent->getMovementMode());
+        if (agent->getBattery() < panicThreshold) {
 
-            agent->assignPath(pathToStation);
+             // Debug: Vedem cine intra in panica
+             // cout << "Agent " << agent->getId() << " ABANDON MISSION. Bat: " << agent->getBattery() << endl;
+
+             std::vector<POINT> pathToStation = Pathfinder::findPath(
+                pos, nearestStation, map, agent->getMovementMode()
+            );
+
+            if (!pathToStation.empty()) {
+                agent->assignPath(pathToStation);
+            }
         }
     }
 }
 
 void HiveMind::assignTasks()
-{
-    int distToPickup, distToDeliver, totalDist, speed, batteryNeeded;
-    int estimatedTicks;
-
-    double operationalCost, score;
-
-
+{//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     vector<TaskBid> bids;
-    //Dureroasa functie
+
+    int speed, costPerTick, distToPickup, distToDeliver, realDistPickup, realDistDeliver, totalDist, estimatedTicks;
+    int expiryTick, timeRemaining, batteryCost;
+    double mazeFactor;
 
     vector<int> idleAgentIndices;
     for (size_t i = 0; i < fleet.size(); ++i)
     {
-        //check ca agenti sa fie IDLE si vii
         if (fleet[i]->isIdle() && !fleet[i]->isDead())
         {
             idleAgentIndices.push_back(i);
@@ -130,59 +182,76 @@ void HiveMind::assignTasks()
         return;
     }
 
-    //partea de logica pentru a genera ofertele
+    //gen oferte
     for (int agentIdx : idleAgentIndices)
     {
         Agent* agent = fleet[agentIdx];
         POINT agentPos = agent->getPosition();
 
+        // parametrii agentului
+        speed = agent->getSpeed();
+        costPerTick = agent->getCost();
+
+        //intr-uncat distanta Manhattan pe care o calculam nu e precisa, aleg un factor de corectie arbritar de 40%
+        if (agent->getMovementMode() == MOVEMENTMODE::AIR)
+        {
+            mazeFactor = 1.0;
+        }
+        else
+        {
+            mazeFactor = 1.4;
+        }
+
         for (int pkgIdx : pendingPackageIndices)
         {
             Package& pkg = packages[pkgIdx];
 
-            //cal distanta de la baza la client
+            //estimare realista a distantelor
             distToPickup = ManhattanDist(agentPos, map->baza);
             distToDeliver = ManhattanDist(map->baza, pkg.destination);
 
-            totalDist = distToPickup + distToDeliver;
+            realDistPickup = distToPickup * mazeFactor;
+            realDistDeliver = distToDeliver * mazeFactor;
 
-            //estimare distanta si cost
-            if (agent->getMovementMode() == MOVEMENTMODE::AIR)
-            {
-                speed = 3; //Drona
-            }
-            else if (agent->getSymbol() == 'S') {
-                speed = 2; //scuter
-            }
-            else {
-                speed = 1; //robot
-            }
+            totalDist = realDistPickup + realDistDeliver;
 
-            estimatedTicks = totalDist / speed;
-            if (estimatedTicks == 0)
-            {
-                estimatedTicks = 1; //evit div 0
-            }
+            // (Distanta + Viteza - 1) / Viteza = rotunjire in sus
+            estimatedTicks = (totalDist + speed - 1) / speed;
 
-            //check daca ajunge bateria cu o marja de eroare e 10%
-            batteryNeeded = estimatedTicks * agent->getCost();
-            if (agent->getBattery() < batteryNeeded * 1.1f)
+            //verificare dealine
+            expiryTick = pkg.creationTime + pkg.deadlineTicks;
+            timeRemaining = expiryTick - this->currentTick;
+
+            //daca nu ajung, pas la o drona
+            if (estimatedTicks >= timeRemaining)
             {
                 continue;
             }
 
-            // Profit = Reward - (CostOperare * Timp)
-            operationalCost = estimatedTicks * agent->getCost();
-            score = pkg.reward - operationalCost;
 
-
-            //daca pachetul expira soon, creste artificial valoarea lui (ca sa evitam penalizarea care e cam naspa)
-            if (pkg.deadlineTicks < estimatedTicks + 5)
+            //check pt baterie (daca are suficiena ca sa il duca)
+            batteryCost = estimatedTicks * agent->getBatteryConsumption();
+            if (agent->getBattery() < batteryCost + 10)
             {
-                score += 100.0;
+                continue;
             }
 
-            // Adaugam oferta
+            //cal profit
+            double operationalCost = estimatedTicks * costPerTick;
+            double score = pkg.reward - operationalCost;
+
+            //bonus pt urgenta
+            if (timeRemaining < estimatedTicks + 10)
+            {
+                score += 150.0; //bonus mai generos pt a bate costul dronei
+            }
+
+            //penalizam umpic drona daca pachetele nu sunt urgente, ca sa le ia dronele
+            if (agent->getMovementMode() == MOVEMENTMODE::AIR && timeRemaining > 30)
+            {
+                score -= 50.0;
+            }
+
             bids.push_back({agentIdx, pkgIdx, score});
         }
     }
@@ -202,36 +271,68 @@ void HiveMind::assignTasks()
         Agent* agent = fleet[bid.agentIndex];
         Package& pkg = packages[bid.packageIndex];
 
-        //calc ruta
-        vector<POINT> pathPart1;
 
-        //In cazul in care agentul nu e la baza
+        //cal drumul pana la baza
+        vector<POINT> pathToBase;
+
+        //check daca agentul e deja in baza
         if (ManhattanDist(agent->getPosition(), map->baza) > 0)
         {
-            pathPart1 = Pathfinder::findPath(agent->getPosition(), map->baza, map, agent->getMovementMode());
+            pathToBase = Pathfinder::findPath(agent->getPosition(), map->baza, map, agent->getMovementMode());
+
+            //safety check
+            if (pathToBase.empty())
+            {
+                continue;
+            }
         }
 
-        vector<POINT> pathPart2 = Pathfinder::findPath(map->baza, pkg.destination, map, agent->getMovementMode());
+        //calc drumul de la baza la client
+        vector<POINT> pathToClient = Pathfinder::findPath(map->baza, pkg.destination, map, agent->getMovementMode());
 
-        //concatenarea rutelor
-        vector<POINT> fullPath = pathPart1;
-        fullPath.insert(fullPath.end(), pathPart2.begin(), pathPart2.end());
-
-        if (fullPath.empty())
+        // Safety Check
+        if (pathToClient.empty())
         {
-            cerr << "Eroare: Nu s-a gasit drum valid pentru pachetul " << pkg.id << std::endl;
+            cerr << "HiveMind: Client inaccesibil pentru pachetul " << pkg.id << std::endl;
             continue;
         }
 
-        //setam starile noi si marcam ca ocupati
+        //concatenam cele 2 rute
+        vector<POINT> fullPath = pathToBase;
+        fullPath.insert(fullPath.end(), pathToClient.begin(), pathToClient.end());
+
         agent->assignPath(fullPath);
+
         pkg.status = PACKAGESTATUS::ASSIGNED;
         pkg.assignedAgentId = agent->getId();
 
         agentTaken[bid.agentIndex] = true;
         packageTaken[bid.packageIndex] = true;
 
-        cout << "DEBUG: HiveMind: Agent " << agent->getId() << " (" << agent->getSymbol() << ") a preluat pachetul " << pkg.id << " (Reward: " << pkg.reward << ")" << std::endl;
+        std::cout << "[HIVEMIND] Agent " << agent->getId() << " (" << agent->getSymbol() << ") a preluat pachetul " << pkg.id << " (Reward: " << pkg.reward << ")" << std::endl;
+
+        vector<POINT> pathPart1;
+        if (ManhattanDist(agent->getPosition(), map->baza) > 0)
+        {
+             pathPart1 = Pathfinder::findPath(agent->getPosition(), map->baza, map, agent->getMovementMode());
+        }
+        vector<POINT> pathPart2 = Pathfinder::findPath(map->baza, pkg.destination, map, agent->getMovementMode());
+
+        if (pathPart2.empty())
+        {
+            continue;
+        }
+
+        // Concatenare si assign
+        fullPath = pathPart1;
+        fullPath.insert(fullPath.end(), pathPart2.begin(), pathPart2.end());
+
+        agent->assignPath(fullPath);
+        pkg.status = PACKAGESTATUS::ASSIGNED;
+        pkg.assignedAgentId = agent->getId();
+
+        agentTaken[bid.agentIndex] = true;
+        packageTaken[bid.packageIndex] = true;
     }
 }
 

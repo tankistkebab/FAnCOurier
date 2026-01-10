@@ -28,25 +28,29 @@ struct TaskBid
 class HiveMind
 {
 private:
+    int currentTick;
+
     Map* map;
     vector<Agent*>& fleet;       //ref la flota stocata in SimManager
     vector<Package>& packages;   //ref la pachetele din SimManager
 
-public:
-    HiveMind(Map* _map, std::vector<Agent*>& _fleet, std::vector<Package>& _packages): map(_map), fleet(_fleet), packages(_packages) {}
 
-    // Metoda apelata la fiecare tick
-    void update();
-
-private:
     void checkBatteryLevels();
 
     void assignTasks();
 
     void checkDeliveries();
 
+    void checkDeadlines(int currentTick);
+
     POINT findNearestChargingStation(POINT currentPos, MOVEMENTMODE mode);
     int ManhattanDist(POINT a, POINT b);
+
+public:
+    HiveMind(Map* _map, std::vector<Agent*>& _fleet, std::vector<Package>& _packages): map(_map), fleet(_fleet), packages(_packages) {}
+
+    // Metoda apelata la fiecare tick
+    void update(int tick);
 };
 
 

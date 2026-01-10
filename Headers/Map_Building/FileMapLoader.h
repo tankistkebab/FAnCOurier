@@ -9,7 +9,6 @@ private:
     string map_adress = "..//Database//map.txt";
 
 public:
-    //TODO
     void generateMap(Map& map) override;
 
     void setMapAdress(string adress);
