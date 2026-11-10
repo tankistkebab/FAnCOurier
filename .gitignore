@@ -1,0 +1,16 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Build output
+build/
+cmake-build-*/
+out/
+
+# Generated at runtime
+simulation.txt
+
+# OS
+.DS_Store
+Thumbs.db

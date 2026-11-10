@@ -1,4 +1,5 @@
 #include "../Headers/SimManager.h"
+#include <cstdlib>
 
 #include <ranges>
 
@@ -335,8 +336,8 @@ void SimManager::generateFinalReport()
     report << "Venituri (Rewards): +" << totalRewards << endl;
     report << "Costuri Operare: -" << totalOperatingCost << endl;
     report << "Penalizari: -" << totalPenalties << endl;
-    report << "Agenti morti: " << penaltyDeadAgents << ")" << endl;
-    report << "Pachete ratate: " << penaltyMissedPackages << ")" << endl;
+    report << "  - Agenti morti: " << penaltyDeadAgents << endl;
+    report << "  - Pachete ratate: " << penaltyMissedPackages << endl;
     report << "PROFIT NET FINAL: " << finalProfit << endl;
     report << endl;
 

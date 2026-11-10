@@ -1,11 +1,43 @@
-#include <filesystem>
+#include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <memory>
 
 #include "Headers/SimManager.h"
 #include "Headers/Map_Building/ProceduralMapGenerator.h"
 
 using namespace std;
+
+// Reads an integer from stdin, re-prompting on non-numeric input instead of
+// leaving cin in a failed state (which would otherwise loop forever).
+// Exits cleanly if stdin is closed.
+static int readInt(int minValue, int maxValue)
+{
+    int value;
+    while (true)
+    {
+        if (cin >> value)
+        {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            if (value >= minValue && value <= maxValue)
+            {
+                return value;
+            }
+            cout << "Valoarea trebuie sa fie intre " << minValue << " si " << maxValue << ". Incearca din nou:" << endl;
+            continue;
+        }
+
+        if (cin.eof())
+        {
+            cout << endl << "Input inchis. La revedere!" << endl;
+            exit(EXIT_SUCCESS);
+        }
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Input invalid, introdu un numar intreg:" << endl;
+    }
+}
 
 int main()
 {
@@ -36,7 +68,7 @@ int main()
         cout << "2. Generare procedurala" << endl;
         cout << "0. Iesire" << endl;
 
-        cin >> selector;
+        selector = readInt(numeric_limits<int>::min(), numeric_limits<int>::max());
         switch (selector)
         {
             //Incarcare din fisier
@@ -61,6 +93,7 @@ int main()
                             cerr << "Eroare la initializarea FileMapLoader. Incearca din nou" << endl;
                             break;
                         case 2:
+                            cerr << "Harta contine un caracter necunoscut" << endl;
                             break;
                         case 3:
                             cerr << "Eroare la structura hartii" << endl;
@@ -81,8 +114,8 @@ int main()
                 try
                 {
                     int procent;
-                    cout << "Care este procentul de drumuri pe careil doriti (0-100)?" << endl;
-                    cin >> procent;
+                    cout << "Care este procentul de drumuri pe care il doriti (0-100)?" << endl;
+                    procent = readInt(0, 100);
 
                     sim_manager->setGenerator(make_unique<ProceduralMapGenerator>(sim_manager->getClients(), sim_manager->getStations(), procent));
                     sim_manager->startGeneration();
@@ -104,8 +137,18 @@ int main()
                         case 3:
                             cerr << "Harta nu este valida. Incearca din nou" << endl;
                             break;
+                        case 5:
+                            cerr << "Harta generata nu este buna! " << endl;
+                            break;
+                        default:
+                            cerr << "Eroare necunoscuta." << endl;
+                            exit(EXIT_FAILURE);
                     }
                 }
+                break;
+            case 0:
+                status = 0;
+                break;
             default:
                 cout << "Optiune necunoscuta. Incearca din nou!" << endl;
                 break;

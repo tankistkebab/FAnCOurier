@@ -1,26 +1,28 @@
-cmake_minimum_required(VERSION 4.0)
-project(FAnCOurier)
+cmake_minimum_required(VERSION 3.20)
+project(FAnCOurier LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(FAnCOurier main.cpp
+option(FANCOURIER_BUILD_TESTS "Build the unit tests" ON)
+
+# Core simulation logic, shared by the app and the tests
+add_library(fancourier_core STATIC
         Logic/SimManager.cpp
-        Headers/SimManager.h
         Logic/Utils.cpp
-        Headers/Utils.h
-        Logic/Map_Building/IMapGenerator.cpp
-        "Headers/Map_Building/IMapGenerator.h"
-        "Logic/Map_Building/Map.cpp"
-        "Headers/Map_Building/Map.h"
-        "Logic/Map_Building/FileMapLoader.cpp"
-        "Headers/Map_Building/FileMapLoader.h"
-        "Logic/Map_Building/ProceduralMapGenerator.cpp"
-        "Headers/Map_Building/ProceduralMapGenerator.h"
         Logic/Agent.cpp
-        Headers/Agent.h
         Logic/CustomAgents.cpp
-        Headers/CustomAgents.h
-        Headers/Package.h
-        Headers/Pathfinder.h
         Logic/HiveMind.cpp
-        Headers/HiveMind.h)
+        Logic/Map_Building/IMapGenerator.cpp
+        Logic/Map_Building/Map.cpp
+        Logic/Map_Building/FileMapLoader.cpp
+        Logic/Map_Building/ProceduralMapGenerator.cpp)
+target_include_directories(fancourier_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(FAnCOurier main.cpp)
+target_link_libraries(FAnCOurier PRIVATE fancourier_core)
+
+if (FANCOURIER_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif ()

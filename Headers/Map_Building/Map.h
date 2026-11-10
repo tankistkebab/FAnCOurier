@@ -34,6 +34,12 @@ public:
     int getRows() const;
     int getCols() const;
 
+    //Accesori read-only (folositi si in teste)
+    CELLTYPE getCell(int x, int y) const { return grid[x][y]; }
+    POINT getBase() const { return baza; }
+    const vector<POINT>& getClientLocations() const { return clientsLocations; }
+    const vector<POINT>& getChargingStationLocations() const { return chargingStationsLocations; }
+
     void displayMap();
     bool integrityCheck();
 
