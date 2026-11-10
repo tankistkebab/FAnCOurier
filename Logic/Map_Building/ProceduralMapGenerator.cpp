@@ -104,22 +104,39 @@ void ProceduralMapGenerator::addRandomRoads(Map &map)
     }
 }
 
-void ProceduralMapGenerator::placeObjects(Map &map)
+void ProceduralMapGenerator::placeObjects(Map &map, POINT start)
 {
-    int i, j, index;
+    int i, index;
 
     vector<POINT> freeSpots;
 
     index = 0;
 
-    //Iteram prin harta si salvam toate pozitiile unde putem pune statiile si baza (drumurile)
-    for (i = 1; i < map.rows - 1; i++)
+    //Salvam doar drumurile accesibile din punctul de start al labirintului (flood fill).
+    //addRandomRoads poate crea celule de drum izolate; daca am pune un client sau o statie acolo,
+    //harta ar pica integrityCheck.
+    int dx[] = {-1, 1, 0, 0};
+    int dy[] = {0, 0, -1, 1};
+    vector<vector<bool>> visited(map.rows, vector<bool>(map.cols, false));
+    queue<POINT> q;
+    q.push(start);
+    visited[start.x][start.y] = true;
+
+    while (!q.empty())
     {
-        for (j = 1; j < map.cols - 1; j++)
+        POINT current = q.front();
+        q.pop();
+        freeSpots.push_back(current);
+
+        for (i = 0; i < 4; i++)
         {
-            if (map.grid[i][j] == CELLTYPE::ROAD)
+            int nx = current.x + dx[i];
+            int ny = current.y + dy[i];
+            if (nx > 0 && nx < map.rows - 1 && ny > 0 && ny < map.cols - 1 &&
+                !visited[nx][ny] && map.grid[nx][ny] == CELLTYPE::ROAD)
             {
-                freeSpots.push_back({i, j});
+                visited[nx][ny] = true;
+                q.push({nx, ny});
             }
         }
     }
@@ -130,7 +147,7 @@ void ProceduralMapGenerator::placeObjects(Map &map)
     shuffle(freeSpots.begin(), freeSpots.end(), rng);
 
     // Verificam daca mai e loc
-    if (freeSpots.size() < (1 + charging_stations + clients))
+    if (freeSpots.size() < static_cast<size_t>(1 + charging_stations + clients))
     {
         throw 2;
     }
@@ -181,11 +198,11 @@ void ProceduralMapGenerator::generateMap(Map &map) // Maze generation + erosion 
     map.grid.resize(map.rows, vector<CELLTYPE>(map.cols, CELLTYPE::WALL));
 
     //Alegem un pct random de plecare in grid, nu pe margine
-    uniform_int_distribution<int> rowDistribution(1, map.rows - 1);
-    uniform_int_distribution<int> colDistribution(1, map.cols - 1);
+    uniform_int_distribution<int> rowDistribution(1, map.rows - 2);
+    uniform_int_distribution<int> colDistribution(1, map.cols - 2);
 
-    startX = colDistribution(rng);
-    startY = rowDistribution(rng);
+    startX = rowDistribution(rng);
+    startY = colDistribution(rng);
 
     //Am ales sa sparg procesul de generare in 3 funtii penrtu a nu tine o gramada de variabile de care nu mai am nevoie
     //incarcate in memorie
@@ -196,7 +213,7 @@ void ProceduralMapGenerator::generateMap(Map &map) // Maze generation + erosion 
     addRandomRoads(map);
 
     cout << "Punem punctele de interes" << endl;
-    placeObjects(map);
+    placeObjects(map, {startX, startY});
 
     cout << "Verificam daca harta e valida " << endl;
     if (!map.integrityCheck())

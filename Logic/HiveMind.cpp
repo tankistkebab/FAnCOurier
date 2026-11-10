@@ -1,5 +1,5 @@
 #include "../Headers/HiveMind.h"
-#include "../Headers/HiveMind.h"
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 
@@ -310,29 +310,6 @@ void HiveMind::assignTasks()
         packageTaken[bid.packageIndex] = true;
 
         std::cout << "[HIVEMIND] Agent " << agent->getId() << " (" << agent->getSymbol() << ") a preluat pachetul " << pkg.id << " (Reward: " << pkg.reward << ")" << std::endl;
-
-        vector<POINT> pathPart1;
-        if (ManhattanDist(agent->getPosition(), map->baza) > 0)
-        {
-             pathPart1 = Pathfinder::findPath(agent->getPosition(), map->baza, map, agent->getMovementMode());
-        }
-        vector<POINT> pathPart2 = Pathfinder::findPath(map->baza, pkg.destination, map, agent->getMovementMode());
-
-        if (pathPart2.empty())
-        {
-            continue;
-        }
-
-        // Concatenare si assign
-        fullPath = pathPart1;
-        fullPath.insert(fullPath.end(), pathPart2.begin(), pathPart2.end());
-
-        agent->assignPath(fullPath);
-        pkg.status = PACKAGESTATUS::ASSIGNED;
-        pkg.assignedAgentId = agent->getId();
-
-        agentTaken[bid.agentIndex] = true;
-        packageTaken[bid.packageIndex] = true;
     }
 }
 

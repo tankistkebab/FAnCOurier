@@ -1,4 +1,5 @@
 #include "../Headers/Agent.h"
+#include <cstdlib>
 
 Agent::Agent(int _id, POINT _startPos, const Map* _map)
     : id(_id), position(_startPos), map(_map)
